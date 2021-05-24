@@ -28,7 +28,6 @@ import java.io.OutputStream
 class FullScreenActivity : AppCompatActivity() {
     lateinit var imageView: ImageView
     private var image: Bitmap? = null
-    private var selectedOption: String? = null
     var permissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -69,7 +68,6 @@ class FullScreenActivity : AppCompatActivity() {
     }
 
     private fun share() {
-        selectedOption = "Share"
         this.image = getBitmapFromView(imageView)
         checkPermissions()
     }
@@ -85,29 +83,10 @@ class FullScreenActivity : AppCompatActivity() {
             when {
                 grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
                 -> {
-                    if (selectedOption == "Share") {
-                        val share = Intent(Intent.ACTION_SEND)
-                        share.type = "image/*"
-                        share.putExtra(Intent.EXTRA_STREAM, getImageUrl(this, image!!))
-                        startActivity(Intent.createChooser(share, "Share Using"))
-                    } else if (selectedOption == "Save") {
-                        val path = Environment.getExternalStorageDirectory()
-                        val dir = File(path.absolutePath)
-                        dir.mkdirs()
-                        val file = File(dir, "Image")
-                        val out: OutputStream
-
-                        try {
-                            out = FileOutputStream(file)
-                            image!!.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                            out.flush()
-                            out.close()
-
-                            Toast.makeText(this, "Image Saved", Toast.LENGTH_LONG).show()
-                        } catch (e: Exception){
-                            Toast.makeText(this, "Could Not Save Image", Toast.LENGTH_LONG).show()
-                        }
-                    }
+                    val share = Intent(Intent.ACTION_SEND)
+                    share.type = "image/*"
+                    share.putExtra(Intent.EXTRA_STREAM, getImageUrl(this, image!!))
+                    startActivity(Intent.createChooser(share, "Share Using"))
                 }
             }
         }
@@ -146,7 +125,6 @@ class FullScreenActivity : AppCompatActivity() {
     }
 
     private fun saveImage(context: Context, image: Bitmap) {
-        selectedOption = "Save"
         this.image = getBitmapFromView(imageView)
         checkPermissions()
     }

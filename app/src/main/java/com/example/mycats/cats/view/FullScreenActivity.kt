@@ -8,12 +8,10 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,9 +19,6 @@ import androidx.databinding.DataBindingUtil
 import com.example.mycats.R
 import com.example.mycats.databinding.ActivityFullScreenBinding
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 class FullScreenActivity : AppCompatActivity() {
     lateinit var imageView: ImageView
@@ -126,7 +121,9 @@ class FullScreenActivity : AppCompatActivity() {
 
     private fun saveImage(context: Context, image: Bitmap) {
         this.image = getBitmapFromView(imageView)
-        checkPermissions()
+        val bytes = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        MediaStore.Images.Media.insertImage(context.contentResolver, image, "Title", null)
     }
 
 }
